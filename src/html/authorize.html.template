@@ -22,6 +22,19 @@
         flex-wrap: wrap;
         align-items: center;
       }
+            body h1{
+        box-sizing: border-box;
+        padding: 32px 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .round-class{
+        color:white;
+        background:magenta;
+        font-size:12px;
+        font-style:bold;
+      }
       .content {
         width: 100%;
         max-width: 400px;
