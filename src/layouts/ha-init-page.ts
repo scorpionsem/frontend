@@ -27,7 +27,7 @@ class HaInitPage extends LitElement {
                   Home Assistant is not currently connected. You can ask it to
                   come online from your
                   <a href="https://account.nabucasa.com/"
-                    >Nabu Casa account page</a
+                    >Not available account page</a
                   >.
                 </p>
               `
