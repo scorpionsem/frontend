@@ -1057,8 +1057,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   }
 
   private _showInfo = (item: HaMenuItem) => {
-    const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
-      .automation;
+    const {automation} = ((item.parentElement as HaMenu)!.anchorElement as any)!;
+
     fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
   };
 
