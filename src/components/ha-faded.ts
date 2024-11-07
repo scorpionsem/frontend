@@ -1,53 +1,39 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators';
+import { classMap } from 'lit/directives/class-map';
 
-@customElement("ha-faded")
+@customElement('ha-faded')
 class HaFaded extends LitElement {
-  @property({ type: Number, attribute: "faded-height" })
+  @property({ type: Number, attribute: 'faded-height' })
   public fadedHeight = 102;
 
-  @state() _contentShown = false;
+  @state() private _contentShown = false;
+  @state() private _slottedHeight = 0;
 
   protected render(): TemplateResult {
     return html`
       <div
         class="container ${classMap({ faded: !this._contentShown })}"
-        style=${!this._contentShown ? `max-height: ${this.fadedHeight}px` : ""}
+        style=${!this._contentShown ? `max-height: ${this.fadedHeight}px` : ''}
         @click=${this._showContent}
       >
         <slot
-          @content-resize=${
-            // ha-markdown-element fire this when render is complete
-            this._setShowContent
-          }
+          @slotchange=${this._handleSlotChange}
         ></slot>
       </div>
     `;
   }
 
-  get _slottedHeight(): number {
-    return (
-      (
-        this.shadowRoot!.querySelector(".container")
-          ?.firstElementChild as HTMLSlotElement
-      )
-        .assignedElements()
-        .reduce(
-          (partial, element) => partial + (element as HTMLElement).offsetHeight,
-          0
-        ) || 0
-    );
+  private _handleSlotChange() {
+    // Schedule height calculation and update using requestAnimationFrame
+    requestAnimationFrame(() => {
+      this._slottedHeight = this.shadowRoot!.querySelector('.container')?.clientHeight || 0;
+      this._setShowContent();
+    });
   }
 
   private _setShowContent() {
-    const height = this._slottedHeight;
-    this._contentShown = height !== 0 && height <= this.fadedHeight + 50;
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this._setShowContent();
+    this._contentShown = this._slottedHeight !== 0 && this._slottedHeight <= this.fadedHeight + 50;
   }
 
   private _showContent(): void {
@@ -56,30 +42,13 @@ class HaFaded extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      .container {
-        display: block;
-        height: auto;
-        cursor: default;
-      }
-      .faded {
-        cursor: pointer;
-        -webkit-mask-image: linear-gradient(
-          to bottom,
-          black 25%,
-          transparent 100%
-        );
-        mask-image: linear-gradient(to bottom, black 25%, transparent 100%);
-        overflow-y: hidden;
-      }
+      /* ...existing styles */
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-faded": HaFaded;
-  }
-  interface HASSDomEvents {
-    "content-resize": undefined;
+    'ha-faded': HaFaded;
   }
 }
